@@ -2,6 +2,7 @@ import app from './app.js';
 import { config } from './config/env.js';
 import { logger } from './utils/logger.js';
 import { db } from './database/connection.js';
+import { initializeDatabase } from './database/init.js';
 
 const startServer = async () => {
   try {
@@ -9,6 +10,7 @@ const startServer = async () => {
     // as per health check requirements to show "DOWN" if disconnected
     try {
       await db.connect();
+      await initializeDatabase();
     } catch (dbError) {
       logger.error('Initial database connection failed. Health check will report DOWN.', dbError.message);
     }
