@@ -123,7 +123,7 @@ npm test
 
 ### Health Check
 
-**GET /api/v1/health**
+**GET /api/health**
 
 Checks if the server is running and the database connection is established.
 
