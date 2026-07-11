@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-gold: var(--gold);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  
+  --color-brand-bg: var(--brand-bg);
+  --color-brand-card: var(--brand-card);
+  --color-brand-text: var(--brand-text);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-border: var(--brand-border);
+
+  --color-dark-bg: var(--dark-bg);
+  --color-dark-card: var(--dark-card);
+  --color-dark-border: var(--dark-border);
+  --color-dark-text: var(--dark-text);
+  --color-dark-muted: var(--dark-muted);
+}
+
+:root {
+  --primary: #FFFFFF;
+  --secondary: #1E293B;
+  --accent: #FF6500;
+  --gold: #FF6500; /* Map gold utility keys directly to premium Orange */
+  
+  --success: #10B981;
+  --danger: #EF4444;
+  
+  --brand-bg: #FFFFFF;
+  --brand-card: #FFFFFF;
+  --brand-text: #000000;
+  --brand-muted: #475569;
+  --brand-border: #E2E8F0;
+
+  /* Theme tokens for contrast/dark panels (Black, White, Orange) */
+  --dark-bg: #000000;
+  --dark-card: #0F1219;
+  --dark-border: #1E293B;
+  --dark-text: #FFFFFF;
+  --dark-muted: #94A3B8;
+}
+
+body {
+  background-color: var(--brand-bg);
+  color: var(--brand-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Glassmorphism panel styling (Adapted for high-contrast Light mode) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Luxury orange gradients */
+.gold-gradient {
+  background: linear-gradient(135deg, #FF8E43 0%, #FF6500 100%);
+}
+
+.gold-text-gradient {
+  background: linear-gradient(135deg, #FF8E43 0%, #FF6500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom premium scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #FF6500;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D45400;
+}
+
+/* Pulsing loader animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
