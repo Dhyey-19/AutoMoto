@@ -7,37 +7,38 @@ import { ApiError } from '../utils/ApiError.js';
 /**
  * Register a new user
  */
-export const registerUser = async (name, email, password) => {
+export const registerUser = async (userData) => {
+  const { name, email, password } = userData;
   const pool = await db.getConnection();
-  
-  // Check if user already exists
-  const userExistsResult = await pool.request()
-    .input('email', email)
-    .query('SELECT id FROM Users WHERE email = @email');
 
-  if (userExistsResult.recordset.length > 0) {
+  // Check if user already exists
+  const checkUserQuery = await pool.request()
+    .input('Email', email)
+    .query('SELECT * FROM AMUserMaster WHERE Email = @Email');
+
+  if (checkUserQuery.recordset.length > 0) {
     throw new ApiError(400, 'User with this email already exists');
   }
 
-  // Hash the password
+  // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   // Insert into DB
   const insertResult = await pool.request()
-    .input('name', name)
-    .input('email', email)
-    .input('password', hashedPassword)
+    .input('FullName', name)
+    .input('Email', email)
+    .input('PasswordHash', hashedPassword)
     .query(`
-      INSERT INTO Users (name, email, password) 
-      OUTPUT INSERTED.id, INSERTED.name, INSERTED.email, INSERTED.created_at
-      VALUES (@name, @email, @password)
+      INSERT INTO AMUserMaster (FullName, Email, PasswordHash) 
+      OUTPUT INSERTED.UserId, INSERTED.FullName, INSERTED.Email, INSERTED.CreatedAt, INSERTED.Role
+      VALUES (@FullName, @Email, @PasswordHash)
     `);
 
   const user = insertResult.recordset[0];
 
   // Generate JWT token
-  const token = jwt.sign({ id: user.id }, config.jwt.secret, {
+  const token = jwt.sign({ id: user.UserId, role: user.Role }, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn,
   });
 
@@ -47,13 +48,14 @@ export const registerUser = async (name, email, password) => {
 /**
  * Login a user
  */
-export const loginUser = async (email, password) => {
+export const loginUser = async (credentials) => {
+  const { email, password } = credentials;
   const pool = await db.getConnection();
 
   // Find user by email
   const userResult = await pool.request()
-    .input('email', email)
-    .query('SELECT * FROM Users WHERE email = @email');
+    .input('Email', email)
+    .query('SELECT * FROM AMUserMaster WHERE Email = @Email');
 
   if (userResult.recordset.length === 0) {
     throw new ApiError(401, 'Invalid email or password');
@@ -61,19 +63,24 @@ export const loginUser = async (email, password) => {
 
   const user = userResult.recordset[0];
 
-  // Verify password
-  const isMatch = await bcrypt.compare(password, user.password);
+  // Check if active
+  if (!user.IsActive) {
+    throw new ApiError(401, 'User account is inactive');
+  }
+
+  // Compare passwords
+  const isMatch = await bcrypt.compare(password, user.PasswordHash);
   if (!isMatch) {
     throw new ApiError(401, 'Invalid email or password');
   }
 
   // Generate JWT token
-  const token = jwt.sign({ id: user.id }, config.jwt.secret, {
+  const token = jwt.sign({ id: user.UserId, role: user.Role }, config.jwt.secret, {
     expiresIn: config.jwt.expiresIn,
   });
 
-  // Remove password from response
-  delete user.password;
+  // Remove password from returned user object
+  delete user.PasswordHash;
 
   return { user, token };
 };

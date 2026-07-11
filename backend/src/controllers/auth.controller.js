@@ -20,7 +20,8 @@ export const register = async (req, res, next) => {
     const validatedData = registerSchema.parse(req.body);
     const { name, email, password } = validatedData;
 
-    const result = await registerUser(name, email, password);
+    // Call the service with an object as expected by the new service signature
+    const result = await registerUser({ name, email, password });
 
     res.status(201).json({
       success: true,
@@ -46,7 +47,8 @@ export const login = async (req, res, next) => {
     const validatedData = loginSchema.parse(req.body);
     const { email, password } = validatedData;
 
-    const result = await loginUser(email, password);
+    // Call the service with an object as expected by the new service signature
+    const result = await loginUser({ email, password });
 
     res.status(200).json({
       success: true,
