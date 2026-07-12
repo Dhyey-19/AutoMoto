@@ -1,0 +1,13 @@
+{
+  "name": "automoto-monolith",
+  "version": "1.0.0",
+  "description": "Root configuration for unified Azure App Service deployment",
+  "scripts": {
+    "postinstall": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "start": "concurrently \"npm start --prefix backend\" \"npm start --prefix frontend\"",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
