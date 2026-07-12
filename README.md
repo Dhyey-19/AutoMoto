@@ -3,6 +3,9 @@
 AutoMoto is a production-ready, full-stack Car Dealership Inventory System. It demonstrates professional backend architecture, clean coding practices, RESTful API development, scalable folder organization, and modern frontend Progressive Web App (PWA) development.
 
 🚀 **Live Demo:** [https://automoto.azurewebsites.net/](https://automoto.azurewebsites.net/)
+**Admin Login:** [Email: dhyeyshah009@gmail.com] [Password : 190426]
+**User Login:** [Email: test@gmail.com] [Password : 190426]
+
 ## Project Explanation
 
 The AutoMoto platform is designed to handle the core operations of a premium car dealership. It features a complete authentication system with Role-Based Access Control (RBAC), allowing standard users to browse the catalog and purchase vehicles, while granting Administrators exclusive access to inventory management, deep analytics, business insights, and system configuration. 
