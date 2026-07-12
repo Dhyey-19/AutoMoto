@@ -5,6 +5,7 @@ AutoMoto is a production-ready, full-stack Car Dealership Inventory System. It d
 🚀 **Live Demo:** [https://automoto.azurewebsites.net/](https://automoto.azurewebsites.net/)
 
 **Admin Login:** [Email: dhyeyshah009@gmail.com] [Password : 190426]
+
 **User Login:** [Email: test@gmail.com] [Password : 190426]
 
 ## Project Explanation
