@@ -6,11 +6,23 @@ AutoMoto is a production-ready, full-stack Car Dealership Inventory System. It d
 
 The AutoMoto platform is designed to handle the core operations of a premium car dealership. It features a complete authentication system with Role-Based Access Control (RBAC), allowing standard users to browse the catalog and purchase vehicles, while granting Administrators exclusive access to inventory management, deep analytics, business insights, and system configuration. 
 
-**Key Features:**
-- **RESTful Backend API:** Built using Node.js, Express, and MS SQL Server (Azure SQL) utilizing Clean Architecture.
-- **Modern Frontend SPA:** Built with Next.js (App Router), React 19, and Tailwind CSS.
-- **Progressive Web App (PWA):** Installs seamlessly on mobile and desktop devices with offline caching.
-- **Dynamic Masterpiece Showroom:** Animated car showcases with granular vehicle filtering and stock capabilities.
+## Tech Stack & Highlights
+
+This project was built to demonstrate enterprise-level full-stack capabilities, leveraging modern cloud infrastructure and advanced web technologies:
+
+- **Cloud Infrastructure & Deployment:** 
+  - Hosted on **Azure App Service** (Azure Web App) running a consolidated Node.js environment.
+  - Relational Data powered by a live **Azure SQL Database Server**.
+  - Automated **CI/CD Pipeline** directly integrated via GitHub Deployment Center for seamless updates.
+- **Progressive Web App (PWA):** 
+  - Fully configured with manifest and service workers for native-like installation across **Windows, iOS, and Android**.
+  - Includes offline asset caching and custom brand theming for a premium mobile experience.
+- **Backend Architecture:**
+  - Robust **Node.js & Express.js** RESTful API utilizing strict Clean Architecture and Repository Patterns.
+  - High-security token-based Authentication (JWT) and Role-Based Access Control (RBAC).
+- **Frontend Mastery:**
+  - Built with **Next.js (App Router)** and **React 19** for optimized Server-Side Rendering (SSR) and Client-Side dynamic states.
+  - Immersive UX designed with **Tailwind CSS**, featuring custom micro-animations, layout persistence, and responsive glassmorphism.
 
 ## Installation & Setup
 
