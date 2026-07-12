@@ -22,13 +22,13 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse
   const { logout, isAdmin } = useAuth();
 
   const userNavigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Vehicles', href: '/dashboard/vehicles', icon: Car },
     { name: 'Purchase History', href: '/dashboard/purchases', icon: History },
     { name: 'Profile', href: '/dashboard/profile', icon: User },
   ];
 
   const adminNavigation = [
+    { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Inventory Management', href: '/dashboard/inventory', icon: ShieldCheck },
     { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
     { name: 'User Management', href: '/dashboard/users', icon: Users },

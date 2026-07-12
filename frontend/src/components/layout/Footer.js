@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Car, Mail } from 'lucide-react';
+import { Car, Mail, Globe } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -92,7 +92,7 @@ export default function Footer() {
               <a href="mailto:dhyeyshah009@gmail.com" className="hover:text-white transition-colors">dhyeyshah009@gmail.com</a>
             </div>
             <div className="flex items-center space-x-3 text-sm">
-              <span className="text-xs text-[#FF6500] font-black uppercase w-5 text-center flex-shrink-0">WWW</span>
+              <Globe className="h-5 w-5 text-[#FF6500] flex-shrink-0" />
               <a href="https://dhyeyshah.in/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">https://dhyeyshah.in/</a>
             </div>
           </div>

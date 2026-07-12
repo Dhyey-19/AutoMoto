@@ -16,13 +16,21 @@ import {
   ArrowDownRight
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardHome() {
   const { user, isAdmin } = useAuth();
+  const router = useRouter();
   const [vehicles, setVehicles] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (user && !isAdmin) {
+      router.replace('/dashboard/vehicles');
+    }
+  }, [user, isAdmin, router]);
 
   // Load vehicles and transactions
   const loadDashboardData = async () => {
@@ -48,6 +56,10 @@ export default function DashboardHome() {
   useEffect(() => {
     loadDashboardData();
   }, [isAdmin, user]);
+
+  if (!isAdmin) {
+    return null; // Don't render dashboard while redirecting
+  }
 
   if (loading) {
     return (

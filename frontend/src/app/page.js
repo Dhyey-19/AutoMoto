@@ -5,53 +5,9 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { ShieldCheck, Award, Zap, Gauge, Users, Trophy, ChevronRight, Star } from 'lucide-react';
+import { ShieldCheck, Award, Zap, Gauge, Users, Trophy, ChevronRight, Star, Calendar, Palette } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { vehicleService } from '@/services/api';
-
-// High-quality premium vehicle showcase
-const FEATURED_CARS = [
-  {
-    id: 1,
-    make: 'Porsche',
-    model: '911 Carrera GTS',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=800',
-    price: '$142,600',
-    specs: { hp: '473 HP', zeroToSixty: '3.2s', type: 'Gasoline' },
-  },
-  {
-    id: 2,
-    make: 'Tesla',
-    model: 'Model S Plaid',
-    image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=800',
-    price: '$89,990',
-    specs: { hp: '1,020 HP', zeroToSixty: '1.99s', type: 'Electric' },
-  },
-  {
-    id: 3,
-    make: 'Mercedes-Benz',
-    model: 'AMG GT R',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&q=80&w=800',
-    price: '$165,000',
-    specs: { hp: '577 HP', zeroToSixty: '3.5s', type: 'Gasoline' },
-  },
-  {
-    id: 4,
-    make: 'Audi',
-    model: 'R8 V10 Performance',
-    image: 'https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&q=80&w=800',
-    price: '$196,800',
-    specs: { hp: '602 HP', zeroToSixty: '3.1s', type: 'Gasoline' },
-  },
-  {
-    id: 5,
-    make: 'BMW',
-    model: 'M8 Competition Gran Coupe',
-    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=800',
-    price: '$134,100',
-    specs: { hp: '617 HP', zeroToSixty: '3.0s', type: 'Gasoline' },
-  },
-];
 
 const TESTIMONIALS = [
   {
@@ -103,7 +59,7 @@ export default function LandingPage() {
     if (featuredCars.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % featuredCars.length);
-    }, 7000);
+    }, 10000);
     return () => clearInterval(timer);
   }, [featuredCars]);
 
@@ -277,7 +233,7 @@ export default function LandingPage() {
       </section>
 
       {/* Featured Vehicles Showcase */}
-      <section id="featured" className="py-24 px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl scroll-mt-12">
+      <section id="featured" className="py-24 px-4 sm:px-10 lg:px-16 w-full scroll-mt-12">
         <div className="text-center mb-16 space-y-2">
           <h2 className="text-xs font-bold uppercase tracking-widest text-accent">Exclusive Showroom</h2>
           <p className="text-3xl sm:text-4xl font-extrabold text-brand-text">Featured Masterpieces</p>
@@ -293,97 +249,107 @@ export default function LandingPage() {
             No premium vehicles available in the showroom currently.
           </div>
         ) : (
-          <div className="relative rounded-3xl border border-brand-border bg-brand-card overflow-hidden shadow-2xl flex flex-col w-full">
+          <div className="relative rounded-3xl border border-brand-border bg-brand-card hover:border-[#FF6500]/25 overflow-hidden shadow-2xl p-6 sm:p-10 min-h-[500px] flex flex-col xl:flex-row items-center gap-8 xl:gap-12 w-full transition-all duration-300">
             
             {/* Carousel Navigation Arrow Buttons */}
             <button
               onClick={() => setCurrentIndex((prev) => (prev === 0 ? featuredCars.length - 1 : prev - 1))}
-              className="absolute left-6 top-48 z-25 p-3 bg-black/75 border border-zinc-800 rounded-xl hover:bg-[#FF6500] text-white hover:text-black transition-all cursor-pointer hidden sm:block"
+              className="absolute left-4 z-25 p-3 bg-black/75 border border-zinc-800 rounded-xl hover:bg-[#FF6500] hover:border-[#FF6500] text-white hover:text-black transition-all cursor-pointer hidden sm:block shadow-lg"
             >
               <ChevronRight className="h-5 w-5 transform rotate-180" />
             </button>
             <button
               onClick={() => setCurrentIndex((prev) => (prev + 1) % featuredCars.length)}
-              className="absolute right-6 top-48 z-25 p-3 bg-black/75 border border-zinc-800 rounded-xl hover:bg-[#FF6500] text-white hover:text-black transition-all cursor-pointer hidden sm:block"
+              className="absolute right-4 z-25 p-3 bg-black/75 border border-zinc-800 rounded-xl hover:bg-[#FF6500] hover:border-[#FF6500] text-white hover:text-black transition-all cursor-pointer hidden sm:block shadow-lg"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
 
-            {/* Top: Cinematic Wide Image Frame */}
-            <div className="w-full h-80 sm:h-[450px] relative overflow-hidden bg-zinc-950">
+            {/* Left Column: Image Slideshow Frame */}
+            <div className="w-full xl:w-[55%] h-72 sm:h-96 xl:h-[500px] relative rounded-2xl overflow-hidden bg-white border border-brand-border/60 group shrink-0">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={featuredCars[currentIndex].VehicleId}
                   src={featuredCars[currentIndex].ImageUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=800'}
                   alt={`${featuredCars[currentIndex].Make} ${featuredCars[currentIndex].Model}`}
-                  initial={{ opacity: 0, scale: 1.03 }}
+                  initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.8 }}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
               </AnimatePresence>
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent pointer-events-none" />
-              
-              <div className="absolute top-6 left-6 bg-black/75 backdrop-blur-md px-4 py-2.5 rounded-xl border border-accent/40 text-accent text-lg font-black shadow-lg">
-                ${parseFloat(featuredCars[currentIndex].Price).toLocaleString()}
-              </div>
-
-              <div className="absolute bottom-6 left-6 sm:left-10 z-10 space-y-1">
-                <span className="text-xs font-bold text-accent uppercase tracking-widest bg-accent/20 px-3 py-1 rounded-full border border-accent/35">
-                  {featuredCars[currentIndex].CategoryName}
-                </span>
-                <h3 className="text-3xl sm:text-5xl font-black text-white italic uppercase tracking-tight mt-3">
-                  {featuredCars[currentIndex].Make} <span className="text-accent">{featuredCars[currentIndex].Model}</span>
-                </h3>
-              </div>
             </div>
 
-            {/* Bottom: Specifications Dashboard */}
-            <div className="w-full p-6 sm:p-10 space-y-6">
+            {/* Right Column: Dynamic Spec Details */}
+            <div className="w-full xl:w-[45%] space-y-6 flex flex-col justify-between h-full flex-grow">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={featuredCars[currentIndex].VehicleId}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.5 }}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                  className="space-y-6"
                 >
-                  <div className="md:col-span-2 space-y-3">
-                    <span className="text-xs text-brand-muted font-bold uppercase tracking-wider block">Model Description</span>
-                    <p className="text-sm text-brand-muted leading-relaxed font-light">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-xs font-bold text-accent uppercase tracking-widest bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                        {featuredCars[currentIndex].CategoryName}
+                      </span>
+                      <span className="text-[#FF6500] text-xl font-black">
+                        ${parseFloat(featuredCars[currentIndex].Price).toLocaleString()}
+                      </span>
+                    </div>
+                    <h3 className="text-3xl sm:text-4xl font-black text-brand-text mt-2 leading-none tracking-tight">
+                      {featuredCars[currentIndex].Make} {featuredCars[currentIndex].Model}
+                    </h3>
+                  </div>
+
+                  {/* Specs Glass Cards */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center space-x-3 p-1">
+                      <div className="p-2 rounded-lg bg-[#FF6500]/10 text-[#FF6500]">
+                        <Calendar className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0 flex-grow">
+                        <span className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold block">Year</span>
+                        <p className="text-sm font-extrabold text-brand-text break-words whitespace-normal">{featuredCars[currentIndex].ManufactureYear}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3 p-1">
+                      <div className="p-2 rounded-lg bg-[#FF6500]/10 text-[#FF6500]">
+                        <Palette className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0 flex-grow">
+                        <span className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold block">Color</span>
+                        <p className="text-sm font-extrabold text-brand-text break-words whitespace-normal">{featuredCars[currentIndex].Color || '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <span className="text-[10px] text-brand-muted font-bold uppercase tracking-wider block mb-1">Overview</span>
+                    <p className="text-sm text-brand-muted leading-relaxed font-light line-clamp-4">
                       {featuredCars[currentIndex].Description || 'Experience pure performance. This masterpiece represents the standard of engineering design, crafted to deliver unmatched speed, elegance, and handling.'}
                     </p>
                   </div>
 
-                  <div className="space-y-4">
-                    <span className="text-xs text-brand-muted font-bold uppercase tracking-wider block">Specifications</span>
-                    <div className="grid grid-cols-2 gap-4 border-t border-brand-border/60 pt-3">
-                      <div>
-                        <span className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold block">Year</span>
-                        <p className="text-sm font-bold text-brand-text mt-0.5">{featuredCars[currentIndex].ManufactureYear}</p>
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold block">Color</span>
-                        <p className="text-sm font-bold text-brand-text mt-0.5">{featuredCars[currentIndex].Color || '-'}</p>
-                      </div>
-                    </div>
-                    <div className="pt-2">
-                      <Link
-                        href="/login"
-                        className="w-full inline-flex items-center justify-center space-x-2 bg-black hover:bg-black/95 text-white font-bold py-3 px-6 rounded-xl transition-all text-sm shadow border border-zinc-800 active:scale-[0.98]"
-                      >
-                        <span>Inquire Vehicle</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                    </div>
+                  <div className="pt-2">
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#FF6500] to-amber-500 hover:from-[#ff761a] hover:to-amber-600 text-white font-extrabold py-3.5 px-8 rounded-xl transition-all text-sm shadow-lg shadow-[#FF6500]/25 active:scale-[0.98] w-full sm:w-auto justify-center"
+                    >
+                      <span>Inquire Vehicle</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
                   </div>
                 </motion.div>
               </AnimatePresence>
 
               {/* Bottom Dot Navigators */}
-              <div className="flex items-center justify-center space-x-2.5 pt-4 border-t border-brand-border/30">
+              <div className="flex items-center space-x-2.5 pt-4">
                 {featuredCars.map((_, idx) => (
                   <button
                     key={idx}

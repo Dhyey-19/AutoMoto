@@ -82,6 +82,46 @@ export default function AnalyticsPage() {
 
   const netCashFlow = totalSalesRevenue - totalRestockExpense;
 
+  // --- Category & Vehicle Sales Breakdown ---
+  const categorySales = {};
+  purchases.forEach((p) => {
+    const cat = p.CategoryName || 'Unknown';
+    categorySales[cat] = (categorySales[cat] || 0) + p.Quantity;
+  });
+
+  const carSales = {};
+  purchases.forEach((p) => {
+    const car = p.VehicleName || 'Unknown';
+    if (!carSales[car]) {
+      carSales[car] = { quantity: 0, revenue: 0 };
+    }
+    carSales[car].quantity += p.Quantity;
+    carSales[car].revenue += p.TotalAmount;
+  });
+
+  let bestSellingCar = 'None';
+  let bestSellingQty = 0;
+  let bestSellingRev = 0;
+
+  Object.keys(carSales).forEach((car) => {
+    if (carSales[car].quantity > bestSellingQty) {
+      bestSellingCar = car;
+      bestSellingQty = carSales[car].quantity;
+      bestSellingRev = carSales[car].revenue;
+    }
+  });
+
+  const catData = Object.keys(categorySales).map((cat) => ({
+    name: cat,
+    value: categorySales[cat],
+  })).sort((a, b) => b.value - a.value).slice(0, 5);
+
+  const topCarRevenueList = Object.keys(carSales).map((car) => ({
+    name: car,
+    quantity: carSales[car].quantity,
+    revenue: carSales[car].revenue,
+  })).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+
   return (
     <div className="space-y-8">
       <p className="text-sm text-brand-muted font-light -mt-2">
@@ -99,7 +139,7 @@ export default function AnalyticsPage() {
             </h3>
             <p className="text-xs text-emerald-500 flex items-center space-x-1 font-semibold mt-1">
               <TrendingUp className="h-3 w-3" />
-              <span>+{unitsSold} luxury models sold</span>
+              <span>+{unitsSold} sold</span>
             </p>
           </div>
           <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center">
@@ -116,7 +156,7 @@ export default function AnalyticsPage() {
             </h3>
             <p className="text-xs text-accent flex items-center space-x-1 font-semibold mt-1">
               <RefreshCcw className="h-3 w-3" />
-              <span>+{unitsRestocked} vehicles replenished</span>
+              <span>+{unitsRestocked} replenished</span>
             </p>
           </div>
           <div className="h-12 w-12 rounded-xl bg-accent/10 text-accent border border-accent/20 flex items-center justify-center">
@@ -125,18 +165,122 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Cash Flow */}
-        <div className="rounded-2xl border border-brand-border bg-brand-card p-6 flex items-center justify-between shadow-sm sm:col-span-2 lg:col-span-1">
+        <div className="rounded-2xl border border-brand-border bg-brand-card p-6 flex items-center justify-between shadow-sm">
           <div className="space-y-1">
             <span className="text-xs font-semibold text-brand-muted uppercase tracking-wider">Net Cash Flow</span>
             <h3 className={`text-3xl font-extrabold tracking-tight ${netCashFlow >= 0 ? 'text-accent' : 'text-red-500'}`}>
               {netCashFlow >= 0 ? '+' : '-'}${Math.abs(netCashFlow).toLocaleString(undefined, { minimumFractionDigits: 0 })}
             </h3>
             <p className="text-xs text-brand-muted font-medium mt-1">
-              Showroom capital adjustments
+              Showroom adjustments
             </p>
           </div>
           <div className="h-12 w-12 rounded-xl bg-accent/10 text-accent border border-accent/20 flex items-center justify-center">
             <BarChart3 className="h-6 w-6" />
+          </div>
+        </div>
+
+      </div>
+
+      {/* Sales Leader Highlights Grid */}
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+        {/* Top-Selling Model */}
+        <div className="rounded-2xl border border-brand-border bg-brand-card p-6 flex items-center justify-between shadow-sm">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-brand-muted uppercase tracking-wider">Best-Selling Vehicle</span>
+            <h3 className="text-xl font-bold text-brand-text tracking-tight truncate max-w-[200px]" title={bestSellingCar}>
+              {bestSellingCar}
+            </h3>
+            <p className="text-xs text-[#FF6500] font-semibold mt-1">
+              {bestSellingQty} sold
+            </p>
+          </div>
+          <div className="h-12 w-12 rounded-xl bg-[#FF6500]/10 text-[#FF6500] border border-[#FF6500]/20 flex items-center justify-center font-bold text-lg italic">
+            🏆
+          </div>
+        </div>
+
+        {/* Top-Selling Revenue */}
+        <div className="rounded-2xl border border-brand-border bg-brand-card p-6 flex items-center justify-between shadow-sm">
+          <div className="space-y-1">
+            <span className="text-xs font-semibold text-brand-muted uppercase tracking-wider">Best-Seller Gross Revenue</span>
+            <h3 className="text-3xl font-extrabold text-brand-text tracking-tight">
+              ${bestSellingRev.toLocaleString()}
+            </h3>
+            <p className="text-xs text-brand-muted font-medium mt-1">
+              Total sales revenue generated by {bestSellingCar}
+            </p>
+          </div>
+          <div className="h-12 w-12 rounded-xl bg-[#FF6500]/10 text-[#FF6500] border border-[#FF6500]/20 flex items-center justify-center font-bold">
+            💰
+          </div>
+        </div>
+      </div>
+
+      {/* Performance Insights Section */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Category Sales Distribution */}
+        <div className="rounded-2xl border border-brand-border bg-brand-card p-6 space-y-6 shadow-sm">
+          <div className="border-b border-brand-border/60 pb-3">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-brand-text">Category Sales Performance</h4>
+            <p className="text-[10px] text-brand-muted mt-1">Car distribution by total purchase quantity.</p>
+          </div>
+          <div className="space-y-4">
+            {catData.length === 0 ? (
+              <div className="text-center py-10 text-xs text-brand-muted font-light">No sales transactions logged yet.</div>
+            ) : (
+              catData.map((c) => {
+                const maxVal = Math.max(...catData.map(d => d.value)) || 1;
+                const pct = (c.value / maxVal) * 100;
+                return (
+                  <div key={c.name} className="space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="font-semibold text-brand-text">{c.name}</span>
+                      <span className="text-brand-muted font-bold">{c.value} sold</span>
+                    </div>
+                    <div className="h-3 w-full bg-zinc-950 rounded-full overflow-hidden border border-brand-border/60">
+                      <div 
+                        className="h-full rounded-full bg-gradient-to-r from-[#FF6500] to-[#ff8533]"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* Top Vehicle Revenue Leaders */}
+        <div className="rounded-2xl border border-brand-border bg-brand-card p-6 space-y-6 shadow-sm">
+          <div className="border-b border-brand-border/60 pb-3">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-brand-text">Revenue Leaderboard</h4>
+            <p className="text-[10px] text-brand-muted mt-1">Best-selling models and their total revenue.</p>
+          </div>
+          <div className="space-y-4">
+            {topCarRevenueList.length === 0 ? (
+              <div className="text-center py-10 text-xs text-brand-muted font-light">No sales transactions logged yet.</div>
+            ) : (
+              topCarRevenueList.map((item) => {
+                const maxRev = Math.max(...topCarRevenueList.map(d => d.revenue)) || 1;
+                const pct = (item.revenue / maxRev) * 100;
+                return (
+                  <div key={item.name} className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="font-semibold text-brand-text truncate max-w-[150px]">{item.name}</span>
+                      <span className="text-accent font-extrabold">${item.revenue.toLocaleString()}</span>
+                    </div>
+                    <div className="h-3 w-full bg-zinc-950 rounded-full overflow-hidden border border-brand-border/60">
+                      <div 
+                        className="h-full rounded-full bg-gradient-to-r from-[#FF6500] to-yellow-500"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-brand-muted block font-medium">{item.quantity} sold</span>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

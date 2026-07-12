@@ -1,74 +1,38 @@
-# AutoMoto
+# AutoMoto - Premium Car Dealership Inventory System
 
-AutoMoto is a production-ready boilerplate for a full-stack Car Dealership Inventory System. It demonstrates professional backend architecture, clean coding practices, REST API development, scalable folder organization, and modern frontend development.
+AutoMoto is a production-ready, full-stack Car Dealership Inventory System. It demonstrates professional backend architecture, clean coding practices, RESTful API development, scalable folder organization, and modern frontend Progressive Web App (PWA) development.
 
-## Architecture
+## Project Explanation
 
-This is a monorepo containing two independent projects:
-- **Backend**: Node.js, Express.js, MS SQL Server (Azure SQL)
-- **Frontend**: Next.js (App Router), React, Tailwind CSS
+The AutoMoto platform is designed to handle the core operations of a premium car dealership. It features a complete authentication system with Role-Based Access Control (RBAC), allowing standard users to browse the catalog and purchase vehicles, while granting Administrators exclusive access to inventory management, deep analytics, business insights, and system configuration. 
 
-The backend follows Clean Architecture principles with separation of concerns:
-- `controllers`: Handle HTTP requests and responses.
-- `services`: Business logic (to be added as features grow).
-- `models`: Database models/queries.
-- `middlewares`: Request validation, error handling, security, etc.
-- `database`: Database connection and pooling.
-- `utils`: Reusable helper functions and classes.
+**Key Features:**
+- **RESTful Backend API:** Built using Node.js, Express, and MS SQL Server (Azure SQL) utilizing Clean Architecture.
+- **Modern Frontend SPA:** Built with Next.js (App Router), React 19, and Tailwind CSS.
+- **Progressive Web App (PWA):** Installs seamlessly on mobile and desktop devices with offline caching.
+- **Dynamic Masterpiece Showroom:** Animated car showcases with granular vehicle filtering and stock capabilities.
 
-## Folder Structure
+## Installation & Setup
 
-```text
-AutoMoto/
-├── backend/                  # Express.js REST API
-│   ├── src/
-│   │   ├── config/           # Environment variables and config
-│   │   ├── constants/        # System constants
-│   │   ├── controllers/      # Route controllers
-│   │   ├── database/         # MSSQL connection
-│   │   ├── middlewares/      # Express middlewares
-│   │   ├── models/           # Data models
-│   │   ├── repositories/     # Data access layer
-│   │   ├── routes/           # API routing
-│   │   ├── services/         # Business logic
-│   │   ├── utils/            # Utilities (logger, errors)
-│   │   └── validators/       # Zod schemas
-│   ├── tests/                # Jest and Supertest test files
-│   ├── app.js                # Express app setup
-│   └── server.js             # Server entry point
-└── frontend/                 # Next.js Application
-    ├── app/                  # Next.js App Router pages
-    ├── components/           # Reusable UI components
-    ├── hooks/                # Custom React hooks
-    ├── lib/                  # Library configurations
-    ├── providers/            # Context providers (e.g., React Query)
-    ├── services/             # API services (Axios)
-    └── styles/               # Global styles (Tailwind)
+### Prerequisites
+- Node.js (v18+)
+- SQL Server (or Azure SQL Database)
+
+### 1. Database Setup
+Create an MS SQL Database and execute the initial schema scripts (if any) or rely on manual table creations per the project DB design. 
+
+### 2. Backend Setup
+
+```bash
+cd backend
+npm install
 ```
 
-## Installation
-
-1. **Clone the repository** (if not already done).
-2. **Install Backend Dependencies**:
-   ```bash
-   cd backend
-   npm install
-   ```
-3. **Install Frontend Dependencies**:
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-## Environment Variables
-
-### Backend (`backend/.env`)
-
-Create a `.env` file in the `backend` directory with the following variables:
-
+Create a `.env` file in the `backend` directory:
 ```env
 PORT=5000
 NODE_ENV=development
+JWT_SECRET=your_super_secret_jwt_key
 DB_SERVER=your_db_server.database.windows.net
 DB_DATABASE=your_database_name
 DB_USER=your_db_user
@@ -78,76 +42,80 @@ DB_ENCRYPT=true
 DB_TRUST_SERVER_CERTIFICATE=false
 ```
 
-### Frontend (`frontend/.env.local`)
-
-Create a `.env.local` file in the `frontend` directory with the following variable:
-
-```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api/v1
-```
-
-## Running the Application
-
-### Backend
-
-To start the backend in development mode (using nodemon):
-
+Start the backend server:
 ```bash
-cd backend
 npm run dev
 ```
 
-### Frontend
-
-To start the frontend development server:
+### 3. Frontend Setup
 
 ```bash
 cd frontend
-npm run dev
+npm install
 ```
 
+Create a `.env.local` file in the `frontend` directory:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
+
+Start the frontend server:
+```bash
+npm run dev
+```
 The frontend will be available at [http://localhost:3000](http://localhost:3000).
 
-## Running Tests
+## Screenshots
 
-### Backend
+*(Insert screenshots of the Landing Page, Masterpiece Showroom, Analytics Dashboard, and Inventory Table here)*
+
+* Example: `![Landing Page](./assets/landing.png)`
+* Example: `![Admin Dashboard](./assets/dashboard.png)`
+* Example: `![Vehicle Search](./assets/search.png)`
+
+## My AI Usage
+
+**Tools Used:** 
+- **ChatGPT**
+- **Gemini Pro 3.1**
+- **Gemini IDE Assistant**
+
+**How I Used Them:**
+- **Database & Architecture:** I manually created the database design and verified the schema and relationships with ChatGPT before starting the actual coding phase.
+- **Backend Setup & Boilerplate:** I provided the folder structure pattern I wanted, and used AI to generate the initial boilerplate code automatically.
+- **Core API Development:** I wrote the routes, controllers, and service logic manually, while actively consulting ChatGPT for syntax references, best practices, and code structure. 
+- **Refactoring & Debugging:** I utilized Gemini to refactor my backend code, ensuring there were no ambiguities, handling edge cases, and uncovering potential bugs before they occurred in runtime.
+- **Frontend UI & Design:** The UI design and visual logic were entirely AI-generated and heavily referred from premium Dribbble designs. I manually conceptualized, thought through, and directed the design of each corner of the webapp to ensure it met high-quality, modern UX standards.
+
+**Reflection:**
+Using AI significantly accelerated my workflow, allowing me to focus on high-level architecture and custom business logic rather than getting bogged down in boilerplate setup and CSS syntax. It acted as an incredibly effective pair-programmer, especially for validating my database architecture early on and helping me achieve a stunning frontend design that would typically take days to build from scratch.
+
+## Test Report
 
 Tests are written using Jest and Supertest.
 
-```bash
-cd backend
-npm test
+```text
+> automoto-backend@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js
+
+PASS tests/vehicle.test.js
+GET /api/vehicles 200 13.307 ms - 60
+GET /api/vehicles/search?make=Honda 200 1.150 ms - 26
+POST /api/vehicles 201 2.026 ms - 42
+POST /api/vehicles 403 0.860 ms - 58
+PUT /api/vehicles/v1 200 1.097 ms - 42
+DELETE /api/vehicles/v1 200 0.961 ms - 57
+POST /api/vehicles/v1/purchase 201 0.884 ms - 90
+POST /api/vehicles/v1/restock 201 0.940 ms - 90
+
+PASS tests/auth.test.js
+POST /api/auth/register 201 70.861 ms - 269
+POST /api/auth/register 400 1.032 ms - 65
+POST /api/auth/login 200 59.533 ms - 273
+
+Test Suites: 2 passed, 2 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        2.948 s, estimated 4 s
+Ran all test suites.
 ```
-
-## API Documentation
-
-### Health Check
-
-**GET /api/health**
-
-Checks if the server is running and the database connection is established.
-
-**Success Response:**
-- **Code:** 200 OK
-- **Content:**
-  ```json
-  {
-    "success": true,
-    "status": "UP",
-    "database": "CONNECTED",
-    "environment": "development",
-    "uptime": 100,
-    "timestamp": "2026-07-10T10:00:00Z"
-  }
-  ```
-
-**Database Disconnected Response:**
-- **Code:** 503 Service Unavailable
-- **Content:**
-  ```json
-  {
-    "success": false,
-    "status": "DOWN",
-    "database": "DISCONNECTED"
-  }
-  ```

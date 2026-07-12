@@ -316,9 +316,11 @@ export const getAllTransactions = async (userId = null, role = 'USER') => {
       t.Remarks,
       t.CreatedAt,
       v.Make + ' ' + v.Model AS VehicleName,
+      c.CategoryName,
       u.FullName AS UserName
     FROM AMInventoryTransaction t
     JOIN AMVehicleMaster v ON t.VehicleId = v.VehicleId
+    JOIN AMCategoryMaster c ON v.CategoryId = c.CategoryId
     JOIN AMUserMaster u ON t.UserId = u.UserId
   `;
   
@@ -336,15 +338,19 @@ export const getAllTransactions = async (userId = null, role = 'USER') => {
 export const getFeaturedVehicles = async () => {
   const pool = await db.getConnection();
   const query = `
-    SELECT TOP 3 
-      v.VehicleId, v.Make, v.Model, v.CategoryId, 
-      c.CategoryName, v.ManufactureYear, v.Color, 
-      v.Description, v.Price, v.Quantity, v.ImageUrl, 
-      v.CreatedAt, v.UpdatedAt
-    FROM AMVehicleMaster v
-    JOIN AMCategoryMaster c ON v.CategoryId = c.CategoryId
-    WHERE v.IsActive = 1
-    ORDER BY v.Price DESC
+    WITH RankedVehicles AS (
+      SELECT 
+        v.VehicleId, v.Make, v.Model, v.CategoryId, 
+        c.CategoryName, v.ManufactureYear, v.Color, 
+        v.Description, v.Price, v.Quantity, v.ImageUrl, 
+        v.CreatedAt, v.UpdatedAt,
+        ROW_NUMBER() OVER(PARTITION BY v.CategoryId ORDER BY v.Price DESC) as rn
+      FROM AMVehicleMaster v
+      JOIN AMCategoryMaster c ON v.CategoryId = c.CategoryId
+      WHERE v.IsActive = 1
+    )
+    SELECT * FROM RankedVehicles WHERE rn = 1
+    ORDER BY Price DESC
   `;
   const result = await pool.request().query(query);
   return result.recordset;

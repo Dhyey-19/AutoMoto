@@ -21,6 +21,7 @@ export default function InventoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [stockFilter, setStockFilter] = useState('all'); // 'all', 'instock', 'outofstock'
 
   // Modals & Dialog triggers
   const [selectedVehicle, setSelectedVehicle] = useState(null);
@@ -182,7 +183,16 @@ export default function InventoryPage() {
   // Filtering row listings locally
   const filteredVehicles = vehicles.filter((v) => {
     const text = `${v.Make} ${v.Model} ${v.Color} ${v.CategoryName}`.toLowerCase();
-    return text.includes(searchTerm.toLowerCase());
+    const matchesSearch = text.includes(searchTerm.toLowerCase());
+    
+    let matchesStock = true;
+    if (stockFilter === 'instock') {
+      matchesStock = v.Quantity > 0;
+    } else if (stockFilter === 'outofstock') {
+      matchesStock = v.Quantity === 0;
+    }
+    
+    return matchesSearch && matchesStock;
   });
 
   return (
@@ -219,15 +229,29 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      {/* Internal table search bar */}
-      <div className="w-full max-w-sm">
-        <input
-          type="text"
-          placeholder="Filter table rows..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full rounded-xl border border-brand-border bg-transparent px-4 py-2.5 text-sm text-brand-text placeholder-brand-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
-        />
+      {/* Internal table search bar & stock filters */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <div className="w-full max-w-sm">
+          <input
+            type="text"
+            placeholder="Filter table rows..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-xl border border-brand-border bg-transparent px-4 py-2.5 text-sm text-brand-text placeholder-brand-muted focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none"
+          />
+        </div>
+        <div className="flex items-center space-x-3 w-full sm:w-auto">
+          <span className="text-xs text-brand-muted font-bold uppercase tracking-wider whitespace-nowrap">Stock:</span>
+          <select
+            value={stockFilter}
+            onChange={(e) => setStockFilter(e.target.value)}
+            className="rounded-xl border border-brand-border bg-brand-card text-brand-text px-4 py-2.5 text-sm focus:border-accent focus:outline-none cursor-pointer"
+          >
+            <option value="all">All Vehicles</option>
+            <option value="instock">In Stock</option>
+            <option value="outofstock">Out of Stock</option>
+          </select>
+        </div>
       </div>
 
       {/* Main Listing View */}
