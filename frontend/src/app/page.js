@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { ShieldCheck, Award, Zap, Gauge, Users, Trophy, ChevronRight, Star } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { vehicleService } from '@/services/api';
 
 // High-quality premium vehicle showcase
 const FEATURED_CARS = [
@@ -54,19 +55,19 @@ const FEATURED_CARS = [
 
 const TESTIMONIALS = [
   {
-    name: 'Marcus Vance',
+    name: 'Paras Shah',
     role: 'Venture Capitalist',
     content: 'AutoMoto completely redefined my car-buying experience. The transparency, prompt service, and collection of high-performance models are second to none.',
     rating: 5,
   },
   {
-    name: 'Dr. Helena Rostova',
+    name: 'Nirav Doshi',
     role: 'Chief Medical Officer',
     content: 'The custom order service was seamless. They acquired my AMG GT R and delivered it straight to my estate. Absolute class and professional service.',
     rating: 5,
   },
   {
-    name: 'Arthur Pendelton',
+    name: 'Viral Mehta',
     role: 'Tech Founder',
     content: 'Excellent inventory management system. Being able to browse, review specifications, and secure the vehicle from the dashboard makes this a highly premium service.',
     rating: 5,
@@ -75,6 +76,49 @@ const TESTIMONIALS = [
 
 export default function LandingPage() {
   const { isAuthenticated } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  const [showIntro, setShowIntro] = useState(false);
+
+  const [featuredCars, setFeaturedCars] = useState([]);
+  const [featuredLoading, setFeaturedLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const loadFeatured = async () => {
+      try {
+        const res = await vehicleService.getFeaturedVehicles();
+        if (res.success && res.data?.length > 0) {
+          setFeaturedCars(res.data);
+        }
+      } catch (err) {
+        console.error('Failed to load featured vehicles:', err);
+      } finally {
+        setFeaturedLoading(false);
+      }
+    };
+    loadFeatured();
+  }, []);
+
+  useEffect(() => {
+    if (featuredCars.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % featuredCars.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [featuredCars]);
+
+  useEffect(() => {
+    setMounted(true);
+    const played = sessionStorage.getItem('automoto_intro_played') === 'true';
+    if (!played) {
+      setShowIntro(true);
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+        sessionStorage.setItem('automoto_intro_played', 'true');
+      }, 4200); // 4.2 seconds intro animation
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleExploreClick = (e) => {
     e.preventDefault();
@@ -85,7 +129,91 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden bg-brand-bg text-brand-text">
+    <AnimatePresence mode="wait">
+      {mounted && showIntro ? (
+        <motion.div
+          key="intro"
+          exit={{ opacity: 0, y: -50 }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
+          className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden"
+        >
+          {/* Glow backdrop particles */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#FF6500]/10 blur-[120px] animate-pulse" style={{ animationDuration: '3s' }} />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-orange-500/10 blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
+          </div>
+
+          {/* Speedometer SVG stroke drawing */}
+          <div className="z-10 mb-8 relative flex items-center justify-center w-64 h-32">
+            <svg className="w-full h-full text-zinc-900" viewBox="0 0 200 100">
+              <path
+                d="M20,90 A80,80 0 0,1 180,90"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+              />
+              <motion.path
+                d="M20,90 A80,80 0 0,1 180,90"
+                fill="none"
+                stroke="#FF6500"
+                strokeWidth="4"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 2, ease: 'easeInOut', delay: 0.5 }}
+              />
+              <motion.line
+                x1="100"
+                y1="90"
+                x2="40"
+                y2="40"
+                stroke="#FF6500"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                style={{ originX: '100px', originY: '90px' }}
+                initial={{ rotate: -60 }}
+                animate={{ rotate: [-60, 60, -60, 0] }}
+                transition={{ duration: 3.5, ease: 'easeInOut', times: [0, 0.45, 0.8, 1], delay: 0.2 }}
+              />
+            </svg>
+          </div>
+
+          {/* Pulsing brand logo text */}
+          <div className="z-10 flex flex-col items-center text-center space-y-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 1.2, delay: 0.8 }}
+              className="flex flex-col items-center space-y-1"
+            >
+              <h1 className="text-5xl sm:text-7xl font-black tracking-tighter italic uppercase text-white leading-none">
+                Auto<span className="text-accent">Moto</span>
+              </h1>
+              <p className="text-xs tracking-[0.45em] text-zinc-400 font-bold uppercase mt-1">
+                Drive Your Dreams
+              </p>
+            </motion.div>
+
+            {/* Premium Loading Progress Streak line */}
+            <div className="w-48 h-0.5 bg-zinc-900 rounded-full overflow-hidden relative">
+              <motion.div
+                initial={{ left: '-100%' }}
+                animate={{ left: '100%' }}
+                transition={{ duration: 3.8, ease: 'easeInOut', repeat: 0 }}
+                className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-[#FF6500] to-transparent"
+              />
+            </div>
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="landing"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="min-h-screen flex flex-col overflow-x-hidden bg-brand-bg text-brand-text"
+        >
       <Navbar />
 
       {/* Hero Section with premium background image */}
@@ -156,63 +284,120 @@ export default function LandingPage() {
           <div className="h-1 w-12 bg-accent mx-auto mt-4 rounded-full" />
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {FEATURED_CARS.map((car, idx) => (
-            <motion.div
-              key={car.id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
-              whileHover={{ y: -8 }}
-              className="rounded-2xl border border-brand-border bg-brand-card overflow-hidden shadow-md group transition-all duration-300"
+        {featuredLoading ? (
+          <div className="h-96 rounded-3xl bg-brand-card/40 border border-brand-border flex items-center justify-center animate-pulse">
+            <span className="text-sm text-brand-muted">Fetching masterpieces...</span>
+          </div>
+        ) : featuredCars.length === 0 ? (
+          <div className="py-20 text-center text-brand-muted text-sm font-light">
+            No premium vehicles available in the showroom currently.
+          </div>
+        ) : (
+          <div className="relative rounded-3xl border border-brand-border bg-brand-card overflow-hidden shadow-2xl flex flex-col w-full">
+            
+            {/* Carousel Navigation Arrow Buttons */}
+            <button
+              onClick={() => setCurrentIndex((prev) => (prev === 0 ? featuredCars.length - 1 : prev - 1))}
+              className="absolute left-6 top-48 z-25 p-3 bg-black/75 border border-zinc-800 rounded-xl hover:bg-[#FF6500] text-white hover:text-black transition-all cursor-pointer hidden sm:block"
             >
-              {/* Image with zoom effect */}
-              <div className="relative h-56 overflow-hidden">
-                <img
-                  src={car.image}
-                  alt={`${car.make} ${car.model}`}
-                  className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+              <ChevronRight className="h-5 w-5 transform rotate-180" />
+            </button>
+            <button
+              onClick={() => setCurrentIndex((prev) => (prev + 1) % featuredCars.length)}
+              className="absolute right-6 top-48 z-25 p-3 bg-black/75 border border-zinc-800 rounded-xl hover:bg-[#FF6500] text-white hover:text-black transition-all cursor-pointer hidden sm:block"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+
+            {/* Top: Cinematic Wide Image Frame */}
+            <div className="w-full h-80 sm:h-[450px] relative overflow-hidden bg-zinc-950">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={featuredCars[currentIndex].VehicleId}
+                  src={featuredCars[currentIndex].ImageUrl || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=800'}
+                  alt={`${featuredCars[currentIndex].Make} ${featuredCars[currentIndex].Model}`}
+                  initial={{ opacity: 0, scale: 1.03 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
-                <div className="absolute top-4 right-4 bg-dark-bg/85 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-accent/40 text-accent text-sm font-extrabold tracking-wide">
-                  {car.price}
-                </div>
+              </AnimatePresence>
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent pointer-events-none" />
+              
+              <div className="absolute top-6 left-6 bg-black/75 backdrop-blur-md px-4 py-2.5 rounded-xl border border-accent/40 text-accent text-lg font-black shadow-lg">
+                ${parseFloat(featuredCars[currentIndex].Price).toLocaleString()}
               </div>
 
-              {/* Detail body */}
-              <div className="p-6 space-y-4">
-                <div>
-                  <span className="text-xs font-semibold text-accent uppercase tracking-wider">{car.make}</span>
-                  <h3 className="text-xl font-bold text-brand-text mt-0.5">{car.model}</h3>
-                </div>
+              <div className="absolute bottom-6 left-6 sm:left-10 z-10 space-y-1">
+                <span className="text-xs font-bold text-accent uppercase tracking-widest bg-accent/20 px-3 py-1 rounded-full border border-accent/35">
+                  {featuredCars[currentIndex].CategoryName}
+                </span>
+                <h3 className="text-3xl sm:text-5xl font-black text-white italic uppercase tracking-tight mt-3">
+                  {featuredCars[currentIndex].Make} <span className="text-accent">{featuredCars[currentIndex].Model}</span>
+                </h3>
+              </div>
+            </div>
 
-                {/* Grid specs */}
-                <div className="grid grid-cols-3 gap-2 border-t border-b border-brand-border/60 py-3 text-center">
-                  <div>
-                    <div className="text-[10px] text-brand-muted uppercase font-medium">Power</div>
-                    <div className="text-xs font-bold text-brand-text mt-0.5">{car.specs.hp}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-brand-muted uppercase font-medium">0-60 mph</div>
-                    <div className="text-xs font-bold text-brand-text mt-0.5">{car.specs.zeroToSixty}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-brand-muted uppercase font-medium">Engine</div>
-                    <div className="text-xs font-bold text-brand-text mt-0.5">{car.specs.type}</div>
-                  </div>
-                </div>
-
-                {/* CTAs */}
-                <Link
-                  href="/login"
-                  className="w-full bg-black text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center space-x-1.5 hover:bg-black/90 transition-colors text-sm shadow active:scale-95"
+            {/* Bottom: Specifications Dashboard */}
+            <div className="w-full p-6 sm:p-10 space-y-6">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={featuredCars[currentIndex].VehicleId}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.5 }}
+                  className="grid grid-cols-1 md:grid-cols-3 gap-8"
                 >
-                  <span>Inquire Vehicle</span>
-                </Link>
+                  <div className="md:col-span-2 space-y-3">
+                    <span className="text-xs text-brand-muted font-bold uppercase tracking-wider block">Model Description</span>
+                    <p className="text-sm text-brand-muted leading-relaxed font-light">
+                      {featuredCars[currentIndex].Description || 'Experience pure performance. This masterpiece represents the standard of engineering design, crafted to deliver unmatched speed, elegance, and handling.'}
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <span className="text-xs text-brand-muted font-bold uppercase tracking-wider block">Specifications</span>
+                    <div className="grid grid-cols-2 gap-4 border-t border-brand-border/60 pt-3">
+                      <div>
+                        <span className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold block">Year</span>
+                        <p className="text-sm font-bold text-brand-text mt-0.5">{featuredCars[currentIndex].ManufactureYear}</p>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold block">Color</span>
+                        <p className="text-sm font-bold text-brand-text mt-0.5">{featuredCars[currentIndex].Color || '-'}</p>
+                      </div>
+                    </div>
+                    <div className="pt-2">
+                      <Link
+                        href="/login"
+                        className="w-full inline-flex items-center justify-center space-x-2 bg-black hover:bg-black/95 text-white font-bold py-3 px-6 rounded-xl transition-all text-sm shadow border border-zinc-800 active:scale-[0.98]"
+                      >
+                        <span>Inquire Vehicle</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Bottom Dot Navigators */}
+              <div className="flex items-center justify-center space-x-2.5 pt-4 border-t border-brand-border/30">
+                {featuredCars.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      idx === currentIndex ? 'w-8 bg-[#FF6500]' : 'w-2.5 bg-zinc-700 hover:bg-zinc-500'
+                    }`}
+                  />
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </div>
+
+          </div>
+        )}
       </section>
 
       {/* Why Choose AutoMoto (Service USP) */}
@@ -350,6 +535,8 @@ export default function LandingPage() {
       </section>
 
       <Footer />
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

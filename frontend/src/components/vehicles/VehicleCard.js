@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { ShoppingCart, Edit, Trash2, PlusCircle, Car } from 'lucide-react';
 
-export default function VehicleCard({ vehicle, onPurchase, onEdit, onDelete, onRestock }) {
+export default function VehicleCard({ vehicle, isComparing, onCompareToggle, onPurchase, onEdit, onDelete, onRestock }) {
   const { isAdmin } = useAuth();
 
   const {
@@ -32,6 +32,18 @@ export default function VehicleCard({ vehicle, onPurchase, onEdit, onDelete, onR
       
       {/* Visual Frame */}
       <div className="relative h-48 w-full overflow-hidden bg-white">
+        {/* Compare Checkbox */}
+        <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+          <label className="flex items-center space-x-1.5 bg-black/75 backdrop-blur-sm text-white px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer hover:bg-black transition-colors border border-zinc-800">
+            <input
+              type="checkbox"
+              checked={isComparing || false}
+              onChange={() => onCompareToggle(vehicle)}
+              className="accent-[#FF6500] h-3.5 w-3.5 cursor-pointer"
+            />
+            <span>Compare</span>
+          </label>
+        </div>
         <img
           src={displayImage}
           alt={`${Make} ${Model}`}

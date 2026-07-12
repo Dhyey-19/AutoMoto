@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Car, Mail, Phone, MapPin } from 'lucide-react';
+import { Car, Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -87,17 +87,13 @@ export default function Footer() {
           {/* Contact Details */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Contact Info</h4>
-            <div className="flex items-start space-x-3 text-sm">
-              <MapPin className="h-5 w-5 text-gold flex-shrink-0" />
-              <span>100 Luxury Showroom Blvd, Beverly Hills, CA 90210</span>
+            <div className="flex items-center space-x-3 text-sm">
+              <Mail className="h-5 w-5 text-[#FF6500] flex-shrink-0" />
+              <a href="mailto:dhyeyshah009@gmail.com" className="hover:text-white transition-colors">dhyeyshah009@gmail.com</a>
             </div>
             <div className="flex items-center space-x-3 text-sm">
-              <Phone className="h-5 w-5 text-gold flex-shrink-0" />
-              <span>+1 (555) 019-9000</span>
-            </div>
-            <div className="flex items-center space-x-3 text-sm">
-              <Mail className="h-5 w-5 text-gold flex-shrink-0" />
-              <span>sales@automoto.luxury</span>
+              <span className="text-xs text-[#FF6500] font-black uppercase w-5 text-center flex-shrink-0">WWW</span>
+              <a href="https://dhyeyshah.in/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">https://dhyeyshah.in/</a>
             </div>
           </div>
         </div>

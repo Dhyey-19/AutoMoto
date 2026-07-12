@@ -13,6 +13,8 @@ import Modal from '@/components/common/Modal';
 import VehicleForm from '@/components/forms/VehicleForm';
 import { toast } from 'react-hot-toast';
 import { Plus } from 'lucide-react';
+import CelebrationModal from '@/components/common/CelebrationModal';
+import ComparisonModal from '@/components/vehicles/ComparisonModal';
 
 export default function VehiclesPage() {
   const { isAdmin, user } = useAuth();
@@ -23,6 +25,25 @@ export default function VehiclesPage() {
 
   // Dialog & Modal states
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationCarName, setCelebrationCarName] = useState('');
+  const [comparisonList, setComparisonList] = useState([]);
+  const [isComparingOpen, setIsComparingOpen] = useState(false);
+
+  const handleCompareToggle = (vehicle) => {
+    setComparisonList((prev) => {
+      const exists = prev.some((v) => v.VehicleId === vehicle.VehicleId);
+      if (exists) {
+        return prev.filter((v) => v.VehicleId !== vehicle.VehicleId);
+      } else {
+        if (prev.length >= 3) {
+          toast.error('You can compare a maximum of 3 vehicles.');
+          return prev;
+        }
+        return [...prev, vehicle];
+      }
+    });
+  };
   const [isPurchaseOpen, setIsPurchaseOpen] = useState(false);
   const [isRestockOpen, setIsRestockOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -72,22 +93,9 @@ export default function VehiclesPage() {
         )
       );
 
-      // Record in LocalStorage transactions log
-      const tx = res.data;
-      const storedTx = localStorage.getItem('automoto_transactions');
-      const txList = storedTx ? JSON.parse(storedTx) : [];
-      const newTxRecord = {
-        TransactionId: tx.TransactionId || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-        VehicleName: `${selectedVehicle.Make} ${selectedVehicle.Model}`,
-        TransactionType: 'PURCHASE',
-        Quantity: quantity,
-        VehiclePrice: parseFloat(selectedVehicle.Price),
-        TotalAmount: parseFloat(selectedVehicle.Price) * quantity,
-        UserName: user?.FullName || 'Anonymous',
-        Remarks: remarks || 'Online purchase',
-        CreatedAt: new Date().toISOString(),
-      };
-      localStorage.setItem('automoto_transactions', JSON.stringify([newTxRecord, ...txList]));
+      // Trigger celebration animation
+      setCelebrationCarName(`${selectedVehicle.Make} ${selectedVehicle.Model}`);
+      setShowCelebration(true);
 
       toast.success('Vehicle purchased successfully!');
     } catch (err) {
@@ -118,23 +126,6 @@ export default function VehiclesPage() {
             : v
         )
       );
-
-      // Record in LocalStorage transactions log
-      const tx = res.data;
-      const storedTx = localStorage.getItem('automoto_transactions');
-      const txList = storedTx ? JSON.parse(storedTx) : [];
-      const newTxRecord = {
-        TransactionId: tx.TransactionId || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-        VehicleName: `${selectedVehicle.Make} ${selectedVehicle.Model}`,
-        TransactionType: 'RESTOCK',
-        Quantity: quantity,
-        VehiclePrice: parseFloat(selectedVehicle.Price),
-        TotalAmount: parseFloat(selectedVehicle.Price) * quantity,
-        UserName: user?.FullName || 'Admin Warehouse',
-        Remarks: remarks || 'Restock replenishment',
-        CreatedAt: new Date().toISOString(),
-      };
-      localStorage.setItem('automoto_transactions', JSON.stringify([newTxRecord, ...txList]));
 
       toast.success('Inventory restocked successfully!');
     } catch (err) {
@@ -244,6 +235,8 @@ export default function VehiclesPage() {
             <VehicleCard
               key={car.VehicleId}
               vehicle={car}
+              isComparing={comparisonList.some((v) => v.VehicleId === car.VehicleId)}
+              onCompareToggle={handleCompareToggle}
               onPurchase={triggerPurchase}
               onEdit={triggerEdit}
               onDelete={triggerDelete}
@@ -312,6 +305,47 @@ export default function VehiclesPage() {
           />
         </Modal>
       )}
+
+      {/* Purchase Celebration Modal */}
+      <CelebrationModal
+        isOpen={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        vehicleName={celebrationCarName}
+      />
+
+      {/* Floating Comparison Bar */}
+      {comparisonList.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 bg-zinc-950/95 border border-zinc-800 text-white rounded-2xl px-6 py-4 flex items-center justify-between space-x-8 shadow-2xl backdrop-blur-md animate-fade-in max-w-md w-full">
+          <div className="flex items-center space-x-3">
+            <span className="h-6 w-6 bg-[#FF6500] rounded-full flex items-center justify-center text-xs font-bold text-slate-950">
+              {comparisonList.length}
+            </span>
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">Models Selected</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setComparisonList([])}
+              className="px-3 py-1.5 border border-zinc-800 rounded-xl text-xs text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors cursor-pointer"
+            >
+              Clear
+            </button>
+            <button
+              onClick={() => setIsComparingOpen(true)}
+              className="px-4 py-1.5 gold-gradient rounded-xl text-xs font-bold text-slate-950 hover:opacity-95 transition-opacity cursor-pointer"
+            >
+              Compare Side-by-Side
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Comparison Modal */}
+      <ComparisonModal
+        isOpen={isComparingOpen}
+        onClose={() => setIsComparingOpen(false)}
+        vehicles={comparisonList}
+        onRemove={(car) => setComparisonList((prev) => prev.filter((v) => v.VehicleId !== car.VehicleId))}
+      />
     </div>
   );
 }

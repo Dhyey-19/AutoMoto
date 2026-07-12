@@ -30,9 +30,9 @@ export default function AnalyticsPage() {
       const res = await vehicleService.getVehicles();
       setVehicles(res.data || []);
 
-      const storedTx = localStorage.getItem('automoto_transactions');
-      if (storedTx) {
-        setTransactions(JSON.parse(storedTx));
+      const txRes = await vehicleService.getTransactions();
+      if (txRes.success) {
+        setTransactions(txRes.data || []);
       }
     } catch (err) {
       console.error(err);
@@ -157,7 +157,6 @@ export default function AnalyticsPage() {
               <thead>
                 <tr className="bg-brand-border/20 border-b border-brand-border text-xs text-brand-muted uppercase tracking-wider font-semibold">
                   <th className="px-6 py-4">Transaction ID</th>
-                  <th className="px-6 py-4">Operator / User</th>
                   <th className="px-6 py-4">Vehicle Model</th>
                   <th className="px-6 py-4">Type</th>
                   <th className="px-6 py-4 text-center">Qty</th>
@@ -170,7 +169,6 @@ export default function AnalyticsPage() {
                 {transactions.map((tx) => (
                   <tr key={tx.TransactionId} className="hover:bg-brand-border/10 transition-all text-xs">
                     <td className="px-6 py-4 font-mono text-brand-muted">{tx.TransactionId}</td>
-                    <td className="px-6 py-4 font-semibold text-brand-text">{tx.UserName}</td>
                     <td className="px-6 py-4 font-bold text-brand-text">{tx.VehicleName}</td>
                     <td className="px-6 py-4">
                       <span

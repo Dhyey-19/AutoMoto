@@ -6,6 +6,7 @@ import { vehicleService } from '@/services/api';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/common/ConfirmDialog';
+import CelebrationModal from '@/components/common/CelebrationModal';
 import { 
   ArrowLeft, 
   Car, 
@@ -29,6 +30,7 @@ export default function VehiclePreviewPage({ params }) {
   
   // Dialog state triggers
   const [isPurchaseOpen, setIsPurchaseOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const fetchVehicleDetails = async () => {
     setLoading(true);
@@ -63,22 +65,8 @@ export default function VehiclePreviewPage({ params }) {
         Quantity: Math.max(0, prev.Quantity - quantity),
       }));
 
-      // Log transaction to localStorage logs
-      const tx = res.data;
-      const storedTx = localStorage.getItem('automoto_transactions');
-      const txList = storedTx ? JSON.parse(storedTx) : [];
-      const newTxRecord = {
-        TransactionId: tx.TransactionId || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-        VehicleName: `${vehicle.Make} ${vehicle.Model}`,
-        TransactionType: 'PURCHASE',
-        Quantity: quantity,
-        VehiclePrice: parseFloat(vehicle.Price),
-        TotalAmount: parseFloat(vehicle.Price) * quantity,
-        UserName: user?.FullName || 'Anonymous Buyer',
-        Remarks: remarks || 'Showroom purchase',
-        CreatedAt: new Date().toISOString(),
-      };
-      localStorage.setItem('automoto_transactions', JSON.stringify([newTxRecord, ...txList]));
+      // Trigger purchase celebration animation
+      setShowCelebration(true);
 
       toast.success('Vehicle purchased successfully!');
     } catch (err) {
@@ -237,6 +225,15 @@ export default function VehiclePreviewPage({ params }) {
           showQuantity={true}
           showRemarks={true}
           maxQuantity={vehicle.Quantity}
+        />
+      )}
+
+      {/* Purchase Celebration Modal */}
+      {vehicle && (
+        <CelebrationModal
+          isOpen={showCelebration}
+          onClose={() => setShowCelebration(false)}
+          vehicleName={`${vehicle.Make} ${vehicle.Model}`}
         />
       )}
     </div>

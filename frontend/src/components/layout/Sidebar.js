@@ -9,14 +9,15 @@ import {
   LayoutDashboard,
   History,
   User,
-  Settings,
   ShieldCheck,
   BarChart3,
   Users,
-  LogOut
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
-export default function Sidebar({ isOpen, setIsOpen }) {
+export default function Sidebar({ isOpen, setIsOpen, isCollapsed, toggleCollapse }) {
   const pathname = usePathname();
   const { logout, isAdmin } = useAuth();
 
@@ -25,7 +26,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { name: 'Vehicles', href: '/dashboard/vehicles', icon: Car },
     { name: 'Purchase History', href: '/dashboard/purchases', icon: History },
     { name: 'Profile', href: '/dashboard/profile', icon: User },
-    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];
 
   const adminNavigation = [
@@ -51,23 +51,30 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <div className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-white/40 cursor-not-allowed select-none">
               <div className="flex items-center space-x-3">
                 <Icon className="h-5 w-5 flex-shrink-0" />
-                <span>{item.name}</span>
+                {!isCollapsed && <span>{item.name}</span>}
               </div>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-zinc-800 text-white/40">
-                Soon
-              </span>
+              {!isCollapsed && (
+                <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-zinc-800 text-white/40">
+                  Soon
+                </span>
+              )}
             </div>
           ) : (
             <Link
               href={item.href}
-              className={`flex items-center space-x-3 rounded-xl px-4 py-3 text-sm font-bold transition-all ${
+              title={isCollapsed ? item.name : undefined}
+              className={`flex items-center rounded-xl py-3 text-sm font-bold transition-all ${
+                isCollapsed ? 'md:justify-center md:px-0 md:mx-2 px-4 space-x-0' : 'px-4 space-x-3'
+              } ${
                 active
                   ? 'bg-white/10 text-accent'
                   : 'text-white/70 hover:bg-white/5 hover:text-white'
               }`}
             >
               <Icon className="h-5 w-5 flex-shrink-0" />
-              <span>{item.name}</span>
+              <span className={`transition-all duration-200 ${isCollapsed ? 'md:hidden' : 'inline'}`}>
+                {item.name}
+              </span>
             </Link>
           )}
         </li>
@@ -79,18 +86,31 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     <>
       {/* Sidebar Container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 flex w-72 flex-col border-r border-zinc-800 bg-black transition-transform duration-300 md:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-30 flex flex-col border-r border-zinc-800 bg-black transition-all duration-300 ${
+          isCollapsed ? 'md:w-20' : 'md:w-72'
+        } w-72 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         {/* Header/Logo */}
         <div className="flex h-20 items-center justify-between border-b border-zinc-800 px-6">
-          <Link href="/dashboard" className="flex items-center space-x-2">
-            <Car className="h-7 w-7 text-accent" />
-            <span className="text-xl font-extrabold tracking-wider text-white uppercase italic">
+          <Link href="/dashboard" className="flex items-center space-x-2 overflow-hidden">
+            <Car className="h-7 w-7 text-accent flex-shrink-0" />
+            <span className={`text-xl font-extrabold tracking-wider text-white uppercase italic transition-opacity duration-200 ${
+              isCollapsed ? 'md:opacity-0 md:w-0' : 'opacity-100'
+            }`}>
               Auto<span className="text-accent">Moto</span>
             </span>
           </Link>
+          {/* Collapse toggle button on desktop */}
+          <button
+            onClick={toggleCollapse}
+            className="hidden md:flex p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-white hover:text-accent hover:bg-zinc-800 transition-colors cursor-pointer"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
         </div>
 
         {/* Navigation list */}
@@ -103,7 +123,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
           {isAdmin && (
             <div>
-              <div className="px-4 mb-2 text-[10px] font-bold text-accent uppercase tracking-widest">
+              <div className={`px-4 mb-2 text-[10px] font-bold text-accent uppercase tracking-widest transition-opacity duration-200 ${
+                isCollapsed ? 'md:hidden' : 'block'
+              }`}>
                 Admin Panel
               </div>
               <ul className="space-y-1">
@@ -117,10 +139,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         <div className="border-t border-zinc-800 p-4">
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center space-x-3 rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm font-bold text-red-500 hover:bg-zinc-800 transition-colors active:scale-95 cursor-pointer"
+            title={isCollapsed ? "Sign Out" : undefined}
+            className={`w-full flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 py-3 text-sm font-bold text-red-500 hover:bg-zinc-800 transition-all active:scale-95 cursor-pointer ${
+              isCollapsed ? 'md:px-0 md:space-x-0' : 'px-4 space-x-3'
+            }`}
           >
-            <LogOut className="h-5 w-5" />
-            <span>Sign Out</span>
+            <LogOut className="h-5 w-5 flex-shrink-0" />
+            <span className={isCollapsed ? 'md:hidden' : 'inline'}>Sign Out</span>
           </button>
         </div>
       </aside>

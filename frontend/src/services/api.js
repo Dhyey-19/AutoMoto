@@ -68,6 +68,14 @@ export const vehicleService = {
     const response = await api.get('/vehicles');
     return response.data; // { success: true, data: [vehicles] }
   },
+  getFeaturedVehicles: async () => {
+    const response = await api.get('/vehicles/featured');
+    return response.data; // { success: true, data: [vehicles] }
+  },
+  getTransactions: async () => {
+    const response = await api.get('/vehicles/transactions');
+    return response.data; // { success: true, data: [transactions] }
+  },
   getVehicleById: async (id) => {
     const response = await api.get(`/vehicles/${id}`);
     return response.data; // { success: true, data: vehicle }

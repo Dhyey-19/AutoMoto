@@ -278,3 +278,75 @@ export const restockVehicle = async (vehicleId, userId, quantity, remarks = null
     throw error;
   }
 };
+
+export const getVehicleById = async (id) => {
+  const pool = await db.getConnection();
+  const query = `
+    SELECT 
+      v.VehicleId, v.Make, v.Model, v.CategoryId, 
+      c.CategoryName, v.ManufactureYear, v.Color, 
+      v.Description, v.Price, v.Quantity, v.ImageUrl, 
+      v.CreatedAt, v.UpdatedAt
+    FROM AMVehicleMaster v
+    JOIN AMCategoryMaster c ON v.CategoryId = c.CategoryId
+    WHERE v.VehicleId = @VehicleId AND v.IsActive = 1
+  `;
+  const result = await pool.request()
+    .input('VehicleId', id)
+    .query(query);
+    
+  if (result.recordset.length === 0) {
+    throw new ApiError(404, 'Vehicle model not found.');
+  }
+  
+  return result.recordset[0];
+};
+
+export const getAllTransactions = async (userId = null, role = 'USER') => {
+  const pool = await db.getConnection();
+  let query = `
+    SELECT 
+      t.TransactionId,
+      t.VehicleId,
+      t.UserId,
+      t.TransactionType,
+      t.Quantity,
+      t.VehiclePrice,
+      t.TotalAmount,
+      t.Remarks,
+      t.CreatedAt,
+      v.Make + ' ' + v.Model AS VehicleName,
+      u.FullName AS UserName
+    FROM AMInventoryTransaction t
+    JOIN AMVehicleMaster v ON t.VehicleId = v.VehicleId
+    JOIN AMUserMaster u ON t.UserId = u.UserId
+  `;
+  
+  const request = pool.request();
+  if (role !== 'ADMIN') {
+    query += ` WHERE t.UserId = @userId`;
+    request.input('userId', userId);
+  }
+  
+  query += ` ORDER BY t.CreatedAt DESC`;
+  const result = await request.query(query);
+  return result.recordset;
+};
+
+export const getFeaturedVehicles = async () => {
+  const pool = await db.getConnection();
+  const query = `
+    SELECT TOP 3 
+      v.VehicleId, v.Make, v.Model, v.CategoryId, 
+      c.CategoryName, v.ManufactureYear, v.Color, 
+      v.Description, v.Price, v.Quantity, v.ImageUrl, 
+      v.CreatedAt, v.UpdatedAt
+    FROM AMVehicleMaster v
+    JOIN AMCategoryMaster c ON v.CategoryId = c.CategoryId
+    WHERE v.IsActive = 1
+    ORDER BY v.Price DESC
+  `;
+  const result = await pool.request().query(query);
+  return result.recordset;
+};
+

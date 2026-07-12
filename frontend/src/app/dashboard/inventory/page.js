@@ -156,23 +156,6 @@ export default function InventoryPage() {
         )
       );
 
-      // Save tx record in LocalStorage transactions log
-      const tx = res.data;
-      const storedTx = localStorage.getItem('automoto_transactions');
-      const txList = storedTx ? JSON.parse(storedTx) : [];
-      const newTxRecord = {
-        TransactionId: tx.TransactionId || `TX-${Math.floor(1000 + Math.random() * 9000)}`,
-        VehicleName: `${selectedVehicle.Make} ${selectedVehicle.Model}`,
-        TransactionType: 'RESTOCK',
-        Quantity: quantity,
-        VehiclePrice: parseFloat(selectedVehicle.Price),
-        TotalAmount: parseFloat(selectedVehicle.Price) * quantity,
-        UserName: user?.FullName || 'Admin Warehouse',
-        Remarks: remarks || 'Restock replenishment',
-        CreatedAt: new Date().toISOString(),
-      };
-      localStorage.setItem('automoto_transactions', JSON.stringify([newTxRecord, ...txList]));
-
       toast.success('Inventory restocked successfully!');
     } catch (err) {
       toast.error(err.friendlyMessage || 'Failed to restock vehicle.');

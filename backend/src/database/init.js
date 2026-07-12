@@ -5,15 +5,7 @@ export const initializeDatabase = async () => {
   try {
     const pool = await db.getConnection();
     
-    // Drop old tables if they exist to avoid conflicts during this revision
-    const dropOldTablesQuery = `
-      IF OBJECT_ID('AMInventoryTransaction', 'U') IS NOT NULL DROP TABLE AMInventoryTransaction;
-      IF OBJECT_ID('AMVehicleMaster', 'U') IS NOT NULL DROP TABLE AMVehicleMaster;
-      IF OBJECT_ID('AMCategoryMaster', 'U') IS NOT NULL DROP TABLE AMCategoryMaster;
-      IF OBJECT_ID('AMUserMaster', 'U') IS NOT NULL DROP TABLE AMUserMaster;
-      IF OBJECT_ID('Users', 'U') IS NOT NULL DROP TABLE Users;
-    `;
-    await pool.request().query(dropOldTablesQuery);
+    // Schema creation/migration checks only (tables are preserved)
 
     // Create AMUserMaster table
     const createAMUserMasterQuery = `

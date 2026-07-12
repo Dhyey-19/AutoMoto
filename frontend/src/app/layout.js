@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "AutoMoto - Luxury Car Showroom",
+  title: "AutoMoto",
   description: "Premium Dealership Management System and High-Performance Vehicle Catalog",
+  icons: {
+    icon: '/icon.svg',
+  }
 };
 
 export default function RootLayout({ children }) {

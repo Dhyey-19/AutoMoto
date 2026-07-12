@@ -5,22 +5,21 @@ import { useAuth } from '@/context/AuthContext';
 import EmptyState from '@/components/common/EmptyState';
 import { ShoppingBag, ChevronRight, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { vehicleService } from '@/services/api';
 
 export default function PurchaseHistoryPage() {
   const { user } = useAuth();
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const loadPurchases = () => {
+  const loadPurchases = async () => {
     setLoading(true);
     try {
-      const storedTx = localStorage.getItem('automoto_transactions');
-      if (storedTx) {
-        const txList = JSON.parse(storedTx);
-        // Filter only purchases made by the current user
-        const userPurchases = txList.filter(
-          (t) => t.TransactionType === 'PURCHASE' && t.UserName === user?.FullName
-        );
+      const res = await vehicleService.getTransactions();
+      if (res.success) {
+        const txList = res.data || [];
+        // Filter only purchases
+        const userPurchases = txList.filter((t) => t.TransactionType === 'PURCHASE');
         setPurchases(userPurchases);
       }
     } catch (err) {

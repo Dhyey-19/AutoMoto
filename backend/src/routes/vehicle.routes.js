@@ -4,9 +4,14 @@ import { authenticate, authorize } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
+// Public route
+router.get('/featured', vehicleController.getFeaturedVehicles);
+
 // Routes accessible by USER and ADMIN
 router.get('/', authenticate, vehicleController.getVehicles);
 router.get('/search', authenticate, vehicleController.searchVehicles);
+router.get('/transactions', authenticate, vehicleController.getTransactions);
+router.get('/:id', authenticate, vehicleController.getVehicleById);
 router.post('/:id/purchase', authenticate, vehicleController.purchaseVehicle);
 
 // Routes accessible by ADMIN only

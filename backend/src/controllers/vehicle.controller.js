@@ -136,3 +136,42 @@ export const restockVehicle = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getVehicleById = async (req, res, next) => {
+  try {
+    const vehicle = await vehicleService.getVehicleById(req.params.id);
+    res.status(200).json({
+      success: true,
+      data: vehicle,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTransactions = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const role = req.user.role;
+    const transactions = await vehicleService.getAllTransactions(userId, role);
+    res.status(200).json({
+      success: true,
+      data: transactions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFeaturedVehicles = async (req, res, next) => {
+  try {
+    const vehicles = await vehicleService.getFeaturedVehicles();
+    res.status(200).json({
+      success: true,
+      data: vehicles,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

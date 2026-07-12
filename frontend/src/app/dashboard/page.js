@@ -34,80 +34,9 @@ export default function DashboardHome() {
       const vehicleList = res.data || [];
       setVehicles(vehicleList);
 
-      // 2. Load or seed transaction logs in LocalStorage
-      let storedTransactions = localStorage.getItem('automoto_transactions');
-      if (!storedTransactions) {
-        // Seed with realistic default transaction logs
-        const defaultTx = [
-          {
-            TransactionId: 'TX-1092',
-            VehicleName: 'Porsche 911 Carrera GTS',
-            TransactionType: 'PURCHASE',
-            Quantity: 1,
-            VehiclePrice: 142600,
-            TotalAmount: 142600,
-            UserName: 'Dr. Helena Rostova',
-            Remarks: 'Delivery to Beverly Hills address',
-            CreatedAt: new Date(Date.now() - 3600000 * 2).toISOString(), // 2 hrs ago
-          },
-          {
-            TransactionId: 'TX-1091',
-            VehicleName: 'Tesla Model S Plaid',
-            TransactionType: 'PURCHASE',
-            Quantity: 1,
-            VehiclePrice: 89990,
-            TotalAmount: 89990,
-            UserName: 'Arthur Pendelton',
-            Remarks: 'Trade-in adjustment',
-            CreatedAt: new Date(Date.now() - 3600000 * 5).toISOString(), // 5 hrs ago
-          },
-          {
-            TransactionId: 'TX-1090',
-            VehicleName: 'Mercedes-Benz AMG GT R',
-            TransactionType: 'RESTOCK',
-            Quantity: 3,
-            VehiclePrice: 165000,
-            TotalAmount: 495000,
-            UserName: 'Admin Warehouse',
-            Remarks: 'Shipment from Stuttgart port',
-            CreatedAt: new Date(Date.now() - 3600000 * 24).toISOString(), // 1 day ago
-          },
-          {
-            TransactionId: 'TX-1089',
-            VehicleName: 'Audi R8 V10',
-            TransactionType: 'PURCHASE',
-            Quantity: 1,
-            VehiclePrice: 196800,
-            TotalAmount: 196800,
-            UserName: 'Marcus Vance',
-            Remarks: 'Finance via luxury auto credit',
-            CreatedAt: new Date(Date.now() - 3600000 * 48).toISOString(), // 2 days ago
-          },
-          {
-            TransactionId: 'TX-1088',
-            VehicleName: 'BMW M8 Competition',
-            TransactionType: 'RESTOCK',
-            Quantity: 5,
-            VehiclePrice: 134100,
-            TotalAmount: 670500,
-            UserName: 'Admin Warehouse',
-            Remarks: 'End of quarter inventory replenishment',
-            CreatedAt: new Date(Date.now() - 3600000 * 72).toISOString(), // 3 days ago
-          },
-        ];
-        localStorage.setItem('automoto_transactions', JSON.stringify(defaultTx));
-        storedTransactions = JSON.stringify(defaultTx);
-      }
-      
-      const parsedTx = JSON.parse(storedTransactions);
-      // Filter user's transactions if they are a regular user, or show all if admin
-      if (isAdmin) {
-        setTransactions(parsedTx);
-      } else {
-        // Normal user only sees their own purchases
-        const userTx = parsedTx.filter((t) => t.UserName === user?.FullName || t.TransactionType === 'PURCHASE');
-        setTransactions(userTx);
-      }
+      // 2. Fetch live transactions from database
+      const txRes = await vehicleService.getTransactions();
+      setTransactions(txRes.data || []);
     } catch (err) {
       console.error(err);
       setError(err);
