@@ -2,6 +2,7 @@
 
 AutoMoto is a production-ready, full-stack Car Dealership Inventory System. It demonstrates professional backend architecture, clean coding practices, RESTful API development, scalable folder organization, and modern frontend Progressive Web App (PWA) development.
 
+🚀 **Live Demo:** [https://automoto.azurewebsites.net/](https://automoto.azurewebsites.net/)
 ## Project Explanation
 
 The AutoMoto platform is designed to handle the core operations of a premium car dealership. It features a complete authentication system with Role-Based Access Control (RBAC), allowing standard users to browse the catalog and purchase vehicles, while granting Administrators exclusive access to inventory management, deep analytics, business insights, and system configuration. 
@@ -79,11 +80,25 @@ The frontend will be available at [http://localhost:3000](http://localhost:3000)
 
 ## Screenshots
 
-*(Insert screenshots of the Landing Page, Masterpiece Showroom, Analytics Dashboard, and Inventory Table here)*
-
-* Example: `![Landing Page](./assets/landing.png)`
-* Example: `![Admin Dashboard](./assets/dashboard.png)`
-* Example: `![Vehicle Search](./assets/search.png)`
+<div align="center">
+  <img src="./assets/image%20(1).png" width="48%" />
+  <img src="./assets/image%20(2).png" width="48%" />
+  <img src="./assets/image%20(3).png" width="48%" />
+  <img src="./assets/image%20(4).png" width="48%" />
+  <img src="./assets/image%20(5).png" width="48%" />
+  <img src="./assets/image%20(6).png" width="48%" />
+  <img src="./assets/image%20(7).png" width="48%" />
+  <img src="./assets/image%20(8).png" width="48%" />
+  <img src="./assets/image%20(9).png" width="48%" />
+  <img src="./assets/image%20(10).png" width="48%" />
+  <img src="./assets/image%20(11).png" width="48%" />
+  <img src="./assets/image%20(12).png" width="48%" />
+  <img src="./assets/image%20(13).png" width="48%" />
+  <img src="./assets/image%20(14).png" width="48%" />
+  <img src="./assets/image%20(15).png" width="48%" />
+  <img src="./assets/image%20(16).png" width="48%" />
+  <img src="./assets/image%20(17).png" width="48%" />
+</div>
 
 ## My AI Usage
 
